@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+}
+
+group 'dev.tan'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    implementation 'io.javalin:javalin:3.13.5'
+    implementation 'org.slf4j:slf4j-simple:1.7.30'
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.10.3"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task finalJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'dev.tan.Server'
+    }
+
+    from sourceSets.main.output
+
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+    }
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+}
